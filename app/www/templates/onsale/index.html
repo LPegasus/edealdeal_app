@@ -1,0 +1,38 @@
+<ion-view>
+  <ion-nav-title class="item-input-inset bar">
+    <label class="item-input-wrapper">
+      <i class="icon ion-ios-search placeholder-icon"></i>
+      <input type="search" placeholder="Search" ng-model="searchKeywords" />
+    </label>
+  </ion-nav-title>
+  <ion-nav-buttons side="right">
+    <a class="button button-icon {{header.rightButtonIcon}}" href="javascript:;" ng-click="header.rightButtonCallback()"></a>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="left">
+    <a class="button button-icon {{header.leftButtonIcon}}" href="javascript:;" ng-click="header.leftButtonCallback()"></a>
+  </ion-nav-buttons>
+  <ion-content>
+    <ion-slide-box auto-play="true" slide-interval="5000" does-continue="true">
+      <ion-slide ng-repeat="ad in banners">
+        <a ng-href="{{ad.url ? ad.url : 'javascript:;'}}">
+          <img class="responsive" ng-src="{{ad.imgSrc}}">
+        </a>
+      </ion-slide>
+    </ion-slide-box>
+    <div id="onsale-list">
+      <div class="white-bg tag-shadow" ng-repeat="g in goods">
+        <a class="item item-thumbnail-left" href="#">
+          <img ng-src="{{g.imgSrc}}">
+          <h2 ng-bind="g.title"></h2>
+          <p ng-bind="g.desc" ng-class="['desc']"></p>
+          <div>
+            <div class="inline-block assertive" ng-bind="g.price"></div>
+            <div class="inline-block assertive"><i class="ion-thumbsup"></i>&nbsp;{{g.favCnt}}</div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <ion-infinite-scroll ng-if="moreData()" on-infinite="getMoreProducts()" distance="1%">加载中...</ion-infinite-scroll>
+    <p ng-hide="moreData()" class="no-more-data">没有更多商品了&gt;3&lt;</p>
+  </ion-content>
+</ion-view>

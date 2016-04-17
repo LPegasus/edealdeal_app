@@ -1,0 +1,39 @@
+<ion-view>
+  <ion-nav-title class="item-input-inset bar">
+    <label class="item-input-wrapper">
+      <i class="icon ion-ios-search placeholder-icon"></i>
+      <input type="search" placeholder="Search" ng-model="searchKeywords" />
+    </label>
+  </ion-nav-title>
+  <ion-nav-buttons side="right">
+    <a class="button button-icon {{header.rightButtonIcon}}" href="javascript:;" ng-click="header.rightButtonCallback()"></a>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="left">
+    <a class="button button-icon {{header.leftButtonIcon}}" href="javascript:;" ng-click="header.leftButtonCallback()"></a>
+  </ion-nav-buttons>
+  <ion-content>
+    <ion-slide-box auto-play="true" slide-interval="5000" does-continue="true">
+      <ion-slide ng-repeat="ad in banners">
+        <a ng-href="{{ad.url ? ad.url : 'javascript:;'}}">
+          <img class="responsive" ng-src="{{ad.imgSrc}}">
+        </a>
+      </ion-slide>
+    </ion-slide-box>
+    <ul class="list">
+      <li ng-repeat="g in goods">
+        <div class="qiang_left_img"><img ng-src="{{g.imgSrc}}"></div>
+        <div class="qiang_right_info">
+          <div class="qiang_list_info_title" ng-bind="g.title"></div>
+          <div class="qiang_list_info_prices">
+            <div class="qiang_zhe_tip">特惠</div>
+            <div class="qiang_info_price" ng-bind="g.current_price | currency: '￥'"></div>
+            <div class="qiang_old_price" ng-bind="g.reference_price | currency: '￥'"></div>
+          </div>
+          <div class="qiang_times_info">
+            <a class="qiang_button" ui-sref="rush.detail({id: g.id})">抢购</a>
+          </div>
+      </li>
+    </ul>
+    <lp-timer interval="1000" base-time="{{testTimerNow}}" end-time="{{testTimerNow + 10000}}"></lp-timer>
+  </ion-content>
+</ion-view>

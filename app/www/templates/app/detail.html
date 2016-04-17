@@ -1,0 +1,52 @@
+<ion-view hide-back-button="false" ng-controller="AppDetailCtrl as c">
+  <ion-nav-title>商品详情</ion-nav-title>
+    <ion-nav-buttons side="right" ng-show="!!c.header.rightButtonIcon">
+      <a ng-class="['button button-icon', c.header.rightButtonIcon]" href="javascript:;" ng-click="c.header.rightButtonCallback()"></a>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="left" ng-show="!!c.header.leftButtonIcon">
+      <a ng-class="['button button-icon back-button', c.header.leftButtonIcon]" href="javascript:;" ng-click="c.header.leftButtonCallback()"></a>
+    </ion-nav-buttons>
+  <ion-content>
+    <div class="list">
+      <div class="item">
+        <img class="responsive" ng-src="{{goodsDetail.img_url}}" alt="" />
+      </div>
+      <div class="item detail-item">
+        <div class="row row-top">
+          <div class="col-75">
+            <p class="detail-title" ng-bind="goodsDetail.title"></p>
+            <p class="price">
+              <span class="real" ng-bind="'丢丢价:' + (goodsDetail.current_price | currency: '￥')"></span>
+              <span class="ref" ng-bind="(goodsDetail.reference_price | currency: '￥')"></span>&nbsp;
+            </p>
+            <p class="postage">
+              <span>邮费：包邮</span>&nbsp;&nbsp;&nbsp;
+              <span>配送方式：{{goodsDetail.delivery_way}}</span>
+            </p>
+          </div>
+          <div class="col-25">
+            <img class="responsive" src="http://testapp.edealdeal.com/static/images/country_au.jpg" />
+            <div class="detail-sold-num" ng-cloak>已售：{{goodsDetail.sold_num}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="item item-divider">服务承诺</div>
+      <div class="item detail-ensure">
+        <span><i class="fa fa-check-circle-o fa-lg"></i>&nbsp;<span>正品保证</span></span>
+        <span><i class="fa fa-check-circle-o fa-lg"></i>&nbsp;<span>赠运费险</span></span>
+        <span><i class="fa fa-check-circle-o fa-lg"></i>&nbsp;<span>急速退款</span></span>
+      </div>
+    </div>
+  </ion-content>
+  <ion-footer-bar class="bar-positive detail-bar">
+    <div class="buttons">
+      <button class="button button-clear">
+        <i class="fa fa-shopping-cart fa-lg"></i>
+      </button>
+      <div>
+        <button class="button button-light">加入购物车</button>
+        <button class="button button-light">立即购买</button>
+      </div>
+    </div>
+  </ion-footer-bar>
+</ion-view>

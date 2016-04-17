@@ -1,0 +1,30 @@
+<!--
+  每个 Tab 下的导航页有自己独立的访问历史
+-->
+<ion-tabs class="tabs-icon-top tabs-color-active-assertive tabs-stable tabs-icon-top">
+
+  <!-- Main Tab -->
+  <ion-tab title="商城" icon-off="ion-ios-cart-outline" icon-on="ion-ios-cart" href="#/app/index">
+    <ion-nav-view name="app"></ion-nav-view>
+  </ion-tab>
+
+  <!-- 抢购 Tab -->
+  <ion-tab title="抢购" icon-off="ion-ios-speedometer-outline" icon-on="ion-ios-speedometer" href="#/app/rush">
+    <ion-nav-view name="app-rush"></ion-nav-view>
+  </ion-tab>
+  
+  <!-- 专题 Tab -->
+  <ion-tab title="专题" icon-off="ion-ios-pricetags-outline" icon-on="ion-ios-pricetags" href="#/app/activity">
+    <ion-nav-view name="app-activity"></ion-nav-view>
+  </ion-tab>
+
+  <!-- 折扣 Tab -->
+  <ion-tab title="折扣" icon-off="ion-ios-lightbulb-outline" icon-on="ion-ios-lightbulb" href="#/app/onsale">
+    <ion-nav-view name="app-onsale"></ion-nav-view>
+  </ion-tab>
+
+  <!-- Account Tab -->
+  <ion-tab title="我" icon-off="ion-ios-person-outline" icon-on="ion-ios-person" href="#/app/account">
+    <ion-nav-view name="app-account"></ion-nav-view>
+  </ion-tab>
+</ion-tabs>

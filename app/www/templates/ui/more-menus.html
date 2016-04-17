@@ -1,0 +1,8 @@
+<div class="lp-pop lp-pop--radius lp-pop--user-nav lp-pop--triangle-up" style="position: absolute; width: 128px; top: 52px; right: 2px; z-index: 100;">
+  <i class="icon-pop-triangle" style="right: .8rem; left: auto;"></i>
+  <div class="lp-pop-bd">
+    <ul class="lp-pop-list">
+      <li ng-click="menu.callback()" ng-repeat="(title, menu) in menuList track by title"><i class="icon {{menu.icon}}"></i><span ng-bind="menu.text"></span></li>
+    </ul>
+  </div>
+</div>

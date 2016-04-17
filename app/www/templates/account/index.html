@@ -1,0 +1,63 @@
+<ion-view hide-nav-bar="true" ng-controller="AccountCtrl as user" view-title="我">
+  <ion-content class="stable-bg account-main">
+    <div class="account-top assertive-bg">
+      <div class="account-setting" ng-class="{active: user.settingActivated}" ng-click="user.settingActive(true)">
+        <i class="icon ion-gear-a assertive"></i>
+      </div>
+      <div class="account-photo">
+        登录
+      </div>
+    </div>
+    <div class="account-orders white-bg tag-shadow">
+      <a ng-click="window.alert(1)">
+        <i class="fa fa-file-text"></i>
+        <span>全部订单</span>
+        <i class="fa fa-angle-right fr"></i>
+      </a>
+      <div class="account-orders-status">
+        <a href="/index/order_status/1" onclick="alert(1)">
+          <div class="order_fu">
+            <i class="fa fa-credit-card-alt"></i>
+          </div>
+          <div>待付款</div>
+        </a>
+
+        <a href="/index/order_status/2">
+          <div class="order_fa">
+            <i class="fa fa-truck fa-lg"></i>
+          </div>
+          <div>待发货</div>
+
+        </a>
+        <a href="/index/order_status/3">
+          <div class="order_shou">
+            <i class="fa fa-cubes fa-lg"></i>
+          </div>
+          <div>待收货</div>
+        </a>
+        <a href="/index/order_status/4">
+          <div class="order_ping">
+            <i class="fa fa-pencil-square-o fa-lg"></i>
+          </div>
+          <div>待评价</div>
+        </a>
+      </div>
+    </div>
+    <div class="account-menus">
+      <div class="flexbox">
+        <a ui-sref="app.account.carts">购物车</a>
+        <a>收藏</a>
+        <a>优惠券</a>
+      </div>
+      <div class="flexbox">
+        <a>地址管理</a>
+        <a>积分</a>
+        <a>意见反馈</a>
+      </div>
+    </div>
+    <div class="account-item tag-shadow white-bg">
+      <span>客服热线</span>
+      <span class="fr assertive">021-68419773</span>
+    </div>
+  </ion-content>
+</ion-view>

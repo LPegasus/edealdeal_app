@@ -1,0 +1,63 @@
+<ion-view>
+  <ion-nav-title class="item-input-inset bar">
+    <label class="item-input-wrapper">
+      <i class="icon ion-ios-search placeholder-icon"></i>
+      <input type="search" placeholder="一丢丢海淘" ng-model="searchKeywords" />
+    </label>
+  </ion-nav-title>
+  <ion-nav-buttons side="left">
+    <a class="button button-icon {{header.leftButtonIcon}}" href="javascript:;" ng-click="header.leftButtonCallback()"></a>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="right">
+    <a class="button button-icon {{header.rightButtonIcon}}" href="javascript:;" ng-click="header.rightButtonCallback()"></a>
+  </ion-nav-buttons>
+  <ion-content has-bouncing="false" delegate-handle="mainScroll" on-scroll="scrolling()" scroll-event-interval="50">
+    <!--<div class="bar bar-header item-input-inset assertive-bg">
+      <label class="item-input-wrapper">
+        <i class="icon ion-ios-search placeholder-icon"></i>
+        <input type="search" placeholder="一丢丢搜索" ng-model="searchKeywords" />
+      </label>
+      <button class="button button-clear icon ion-close-circled" ng-click="clearSearch(this)" style="color: white"></button>
+    </div>-->
+    <ion-slide-box auto-play="true" slide-interval="4000" does-continue="true" delegate-handle="sb">
+      <ion-slide ng-repeat="ad in bannerAds">
+        <a href="javascript:;">
+          <img class="responsive" ng-src="{{ad.b_picture}}">
+        </a>
+      </ion-slide>
+    </ion-slide-box>
+    <div id="nav-category" class="clearfix white-bg tag-shadow">
+      <a ng-repeat="datum in moreMenus" ng-href="{{datum.href}}">
+        <div ng-bind="datum.c_name"></div>
+      </a>
+      <a href="/index/onebuy">
+        <div>新人专享</div>
+      </a>
+      <a href="/index/exclusive">
+        <div>小丢特供</div>
+      </a>
+    </div>
+    <div class="home-ads tag-shadow">
+      <a><img class="responsive" ng-src="{{cfg.env.current.webHost}}/static/images/ad1.jpg"></a>
+      <a><img class="responsive" ng-src="{{cfg.env.current.webHost}}/static/images/ad2.jpg"></a>
+      <a><img class="responsive" ng-src="{{cfg.env.current.webHost}}/static/images/ad3.jpg"></a>
+    </div>
+    <ul class="product-list clearfix tag-shadow">
+      <li class="product-item" ng-repeat="datum in Products track by datum.id">
+        <div class="sell_out" ng-show="datum.isSaleOut"></div>
+        <a ng-href="#/app/detail/{{datum.id}}" nav-direction="forward" class="block">
+          <div class="w100h100">
+            <img class="responsive" ng-src="{{datum.img_url}}">
+          </div>
+          <div class="product-title center white-bg" ng-bind="datum.title"></div>
+          <div class="product-price clearfix white-bg">
+            <div class="assertive" ng-bind="'￥' + datum.current_price"></div>
+            <div><img ng-src="{{datum.sourceImg}}">&nbsp;<span ng-bind="datum.delivery_way"></span></div>
+          </div>
+        </a>
+      </li>
+    </ul>
+    <ion-infinite-scroll ng-if="hasMoreGoods()" on-infinite="getMoreProducts()" distance="1%"></ion-infinite-scroll>
+    <p ng-hide="hasMoreGoods()"  class="no-more-data">没有更多商品了&gt;3$lt</p>
+  </ion-content>
+</ion-view>
