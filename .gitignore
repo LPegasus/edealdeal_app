@@ -1,0 +1,12 @@
+*.bak
+*.png
+*.gif
+*.jpeg
+*.jpg
+node_modules/
+platforms/
+plugins/
+*.bat
+bs-config.json
+*.config
+.vscode/
