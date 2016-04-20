@@ -156,3 +156,36 @@
     height: 30px;
     padding: 0 15px;
 }
+
+.lp-pop-container {
+    font-size: .3rem;
+}
+
+.lp-pop-container.no-header .popup-head {
+    padding: 0;
+}
+
+.lp-pop-container .popup-buttons{
+    padding: 0;
+    line-height: 1rem;
+    min-height: 1.2rem;
+}
+
+.lp-pop-container .popup-buttons button{
+    line-height: 1rem;
+    min-height: 1.2rem;
+    border-radius: 0;
+}
+
+.lp-pop-container .popup-head{
+    padding: .2rem;
+    font-size: .6rem;
+}
+
+.lp-pop-container .popup-head .popup-title{
+    font-size: 100%;
+}
+
+.lp-pop-container .popup-head .popup-sub-title{
+    font-size: 60%;
+}

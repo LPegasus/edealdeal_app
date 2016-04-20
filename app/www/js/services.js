@@ -64,7 +64,7 @@ angular.module('starter.services', [])
       "1": cfg.env.current.webHost + "/static/images/Am.png",
       "2": cfg.env.current.webHost + "/static/images/Au.png"
     }
-    
+
     return cfg;
   })
 
@@ -135,13 +135,13 @@ angular.module('starter.services', [])
             return angular.merge({}, defmoreMenus, opts);
           },
           hideBottomBorder: function () {
-            if (navBBBIsShown){
+            if (navBBBIsShown) {
               navBarNode.classList.add('nav-noborder');
               navBBBIsShown = false;
             }
           },
-          showBottomBorder: function() {
-            if (!navBBBIsShown){
+          showBottomBorder: function () {
+            if (!navBBBIsShown) {
               navBarNode.classList.remove('nav-noborder')
               navBBBIsShown = true;
             }
@@ -157,13 +157,24 @@ angular.module('starter.services', [])
    * 接口相关方法
    */
   .provider('LPData', function () {
-    var interfaces = ["checkData"]; //声明对外暴露的方法、属性
+    var interfaces = ["checkData", "fetchData"]; //声明对外暴露的方法、属性
     var DEFAULT = {
       checkData: function (response) {
         if (response.status === 200 && response.data && response.data.data) {
           return response.data.data;
         } else {
           return false;
+        }
+      },
+      fetchData: function (res) {
+        var data;
+        if (!(data = this.checkData(res))) return null;
+        else {
+          var tmp = _.pick(data, function (v, k, o) { return isNaN(v); }), arrRes = [];
+          for (var i in tmp){
+            arrRes.push(tmp[i]);
+          }
+          return arrRes;
         }
       }
     };
@@ -230,7 +241,7 @@ angular.module('starter.services', [])
       } else {
         LPStorage.setItem(this.paramName, _httpParams_.data);
       }
-      
+
       this.params = _httpParams_;
       return $http(_httpParams_).then(function (res) {
         LPStorage.setItem(me.resultName, res.data);
@@ -252,27 +263,35 @@ angular.module('starter.services', [])
   }])
 
   .factory("GoodsListModel", ["LPRESTfulFactory", 'LPConfig', function (modelFactory, config) {
-    return modelFactory.makeAPI(config.env.current.apiHost + "/mall/getMallGoodsList", 'LIST_PARAM', 'LIST_RESULT', true, { method: "POST", data: {page_size: 10} });
-  }])
-  
-  .factory("GetBannerByCategoryModel", ["LPRESTfulFactory", 'LPConfig', function(modelFactory, config){
-    return modelFactory.makeAPI(config.env.current.apiHost + "/website/getBannerByCategory", "HOME_BANNER_PARAM", 'HOME_BANNER_RESULT', false);
-  }])
-  
-  .factory("GetMenu2Model", ["LPRESTfulFactory", 'LPConfig', function(modelFactory, config){
-    return modelFactory.makeAPI(config.env.current.apiHost + "/website/getMenu2", "HOME_GETMENU2_PARAM", "HOME_GETMENU2_RESULT", true, {method: 'POST'});
-  }])
-  
-  .factory('GetSPGoodsListModel', ['LPRESTfulFactory', 'LPConfig', function(modelFactory, config){
-    return modelFactory.makeAPI(config.env.current.apiHost + "/Spgoods/getSPGoodsList", "RUSH_GETSPGOODS_PARAM", "RUSH_GETSPGOODS_RESULT", true, {method: 'POST'});
-  }])
-  
-  .factory('GetTOPCompareListModel', ['LPRESTfulFactory', 'LPConfig', function(modelFactory, config){
-    return modelFactory.makeAPI(config.env.current.apiHost + "/compare/getTOPCompareList", "ACTIVITY_GETTOPSCOMPARELIST_PARAM", "ACTIVITY_GETTOPSCOMPARELIST_RESULT", true, {method: 'POST'});
+    return modelFactory.makeAPI(config.env.current.apiHost + "/mall/getMallGoodsList", 'LIST_PARAM', 'LIST_RESULT', true, { method: "POST", data: { page_size: 10 } });
   }])
 
-  .factory('GetTOPDiscountListModel', ['LPRESTfulFactory', 'LPConfig', function(modelFactory, config){
-    return modelFactory.makeAPI(config.env.current.apiHost + '/discount/getTOPDiscountList', 'ONSALE_GETTOPDISCOUNTLIST_PARAM', 'ONSALE_GETTOPDISCOUNTLIST_RESULT', true, {method: 'POST'})
+  .factory("GetBannerByCategoryModel", ["LPRESTfulFactory", 'LPConfig', function (modelFactory, config) {
+    return modelFactory.makeAPI(config.env.current.apiHost + "/website/getBannerByCategory", "HOME_BANNER_PARAM", 'HOME_BANNER_RESULT', false);
+  }])
+
+  .factory("GetMenu2Model", ["LPRESTfulFactory", 'LPConfig', function (modelFactory, config) {
+    return modelFactory.makeAPI(config.env.current.apiHost + "/website/getMenu2", "HOME_GETMENU2_PARAM", "HOME_GETMENU2_RESULT", true, { method: 'POST' });
+  }])
+
+  .factory('GetSPGoodsListModel', ['LPRESTfulFactory', 'LPConfig', function (modelFactory, config) {
+    return modelFactory.makeAPI(config.env.current.apiHost + "/Spgoods/getSPGoodsList", "RUSH_GETSPGOODS_PARAM", "RUSH_GETSPGOODS_RESULT", true, { method: 'POST' });
+  }])
+
+  .factory('GetTOPCompareListModel', ['LPRESTfulFactory', 'LPConfig', function (modelFactory, config) {
+    return modelFactory.makeAPI(config.env.current.apiHost + "/compare/getTOPCompareList", "ACTIVITY_GETTOPSCOMPARELIST_PARAM", "ACTIVITY_GETTOPSCOMPARELIST_RESULT", true, { method: 'POST' });
+  }])
+
+  .factory('GetTOPDiscountListModel', ['LPRESTfulFactory', 'LPConfig', function (modelFactory, config) {
+    return modelFactory.makeAPI(config.env.current.apiHost + '/discount/getTOPDiscountList', 'ONSALE_GETTOPDISCOUNTLIST_PARAM', 'ONSALE_GETTOPDISCOUNTLIST_RESULT', true, { method: 'POST' });
+  }])
+
+  .factory('GetGoodsCommentModel', ['LPRESTfulFactory', 'LPConfig', function (modelFactory, config) {
+    return modelFactory.makeAPI(config.env.current.apiHost + '/mall/getGoodsComment', 'DETAIL_GETGOODSCOMMENT_PARAMS', 'DETAIL_GETGOODSCOMMENT_RESULT', true, { method: 'GET' });
+  }])
+
+  .factory('GetGoodsDetailModel', ['LPRESTfulFactory', 'LPConfig', function (modelFactory, config) {
+    return modelFactory.makeAPI(config.env.current.apiHost + '/mall/getGoodsDetail', 'DETAIL_GETGOODSDETAIL_PARAMS', 'DETAIL_GETGOODSDETAIL_RESULT', true, { method: 'POST' });
   }])
   /**
    * @desc 封装localStorage
@@ -417,21 +436,21 @@ angular.module('starter.services', [])
       }
     }
   }])
-  
+
   .factory('LPRequestInterceptor', ['$q', '$ionicPopup', '$timeout',
-    function($q, $ionicPopup, $timeout){
-    return {
-      request: function(){
-        if (window.navigator.onLine === false) {
-          var popup = $ionicPopup.alert({
-            title: '连接失败',
-            template: '您现在正处于离线状态，请先连接网络。'
-          });
-          $timeout(function() {
-            popup.close();
-          }, 3000);
+    function ($q, $ionicPopup, $timeout) {
+      return {
+        request: function () {
+          if (window.navigator.onLine === false) {
+            var popup = $ionicPopup.alert({
+              title: '连接失败',
+              template: '您现在正处于离线状态，请先连接网络。'
+            });
+            $timeout(function () {
+              popup.close();
+            }, 3000);
+          }
         }
       }
-    }
-  }])
+    }])
   ;

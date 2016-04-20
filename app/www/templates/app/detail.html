@@ -1,13 +1,13 @@
-<ion-view hide-back-button="false" ng-controller="AppDetailCtrl as c">
+<ion-view hide-back-button="false">
   <ion-nav-title>商品详情</ion-nav-title>
-    <ion-nav-buttons side="right" ng-show="!!c.header.rightButtonIcon">
-      <a ng-class="['button button-icon', c.header.rightButtonIcon]" href="javascript:;" ng-click="c.header.rightButtonCallback()"></a>
-    </ion-nav-buttons>
-    <ion-nav-buttons side="left" ng-show="!!c.header.leftButtonIcon">
-      <a ng-class="['button button-icon back-button', c.header.leftButtonIcon]" href="javascript:;" ng-click="c.header.leftButtonCallback()"></a>
-    </ion-nav-buttons>
+  <ion-nav-buttons side="right" ng-show="!!c.header.rightButtonIcon">
+    <a ng-class="['button button-icon', c.header.rightButtonIcon]" href="javascript:;" ng-click="c.header.rightButtonCallback()"></a>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="left" ng-show="!!c.header.leftButtonIcon">
+    <a ng-class="['button button-icon back-button', c.header.leftButtonIcon]" href="javascript:;" ng-click="c.header.leftButtonCallback()"></a>
+  </ion-nav-buttons>
   <ion-content>
-    <div class="list">
+    <div class="list" id="goods-detail-view">
       <div class="item">
         <img class="responsive" ng-src="{{goodsDetail.img_url}}" alt="" />
       </div>
@@ -30,23 +30,35 @@
           </div>
         </div>
       </div>
-      <div class="item item-divider">服务承诺</div>
-      <div class="item detail-ensure">
+      <div class="item transparent">服务承诺</div>
+      <div class="item detail-ensure tag-shadow">
         <span><i class="fa fa-check-circle-o fa-lg"></i>&nbsp;<span>正品保证</span></span>
         <span><i class="fa fa-check-circle-o fa-lg"></i>&nbsp;<span>赠运费险</span></span>
         <span><i class="fa fa-check-circle-o fa-lg"></i>&nbsp;<span>急速退款</span></span>
       </div>
-    </div>
-  </ion-content>
-  <ion-footer-bar class="bar-positive detail-bar">
-    <div class="buttons">
-      <button class="button button-clear">
-        <i class="fa fa-shopping-cart fa-lg"></i>
-      </button>
-      <div>
-        <button class="button button-light">加入购物车</button>
-        <button class="button button-light">立即购买</button>
+      <div class="item detail-ensure tag-shadow">
+        <span><i class="icon-rect-free"></i> 全场包邮</span>
+      </div>
+      <div class="item tag-shadow white-bg" id="go-to-detail">
+        <span>商品详情</span>
+        <span class="fr"><i class="fa fa-angle-right fa-lg"></i></span>
+      </div>
+      <div class="list white-bg tag-shadow" id="comment-list" ng-if="c.comments">
+        <h2>评论（5）</h2>
+        <a class="item item-avatar" ng-repeat="comment in c.comments">
+          <img ng-src="{{comment.header}}">
+          <h3><span>{{comment.username}}</span><span class="fr grey">{{comment.datetime | date:'yyyy-MM-dd  HH:mm:ss'}}</span></h3>
+          <p>{{comment.content}}</p>
+        </a>
+        <div id="more-comment">
+          <a ui-sref=".allcomment">查看更多留言</a>
+        </div>
       </div>
     </div>
-  </ion-footer-bar>
+  </ion-content>
+  <div class="bar bar-footer bar-buy stable-bg">
+    <button><i class="icon ion-ios-cart"></i><br/>购物车</button>
+    <button id="add-to-cart">加入购物车</button>
+    <button class="assertive-bg" id="go-to-pay">立即购买</button>
+  </div>
 </ion-view>

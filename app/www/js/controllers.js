@@ -2,7 +2,7 @@ angular.module('starter.controllers', ['ngSanitize'])
 
   .controller('DashCtrl', function ($scope) { })
 
-  .controller('ChatsCtrl', function ($scope, Chats, $ionicHistory) {
+  .controller('ChatsCtrl', ['$scope', 'Chats', '$ionicHistory', function ($scope, Chats, $ionicHistory) {
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
     // To listen for when this page is active (for example, to refresh data),
@@ -10,20 +10,9 @@ angular.module('starter.controllers', ['ngSanitize'])
     //
     //$scope.$on('$ionicView.enter', function(e) {
     //});
-    $scope.chats = Chats.all();
-    $scope.remove = function (chat) {
-      Chats.remove(chat);
-    };
-  })
-
-  .controller('ChatDetailCtrl', ['$scope', '$stateParams', 'Chats', '$ionicHistory', function ($scope, $stateParams, Chats, $ionicHistory) {
-    $scope.chat = Chats.get($stateParams.chatId);
-    console.log($ionicHistory.backView());
-  }])
-
-  .controller('AccountCtrl', ['$scope', '$ionicHistory', '$injector', function ($scope, $ionicHistory, $ioc) {
+    debugger;
     var me = this;
-    var $timeout = $ioc.get("$timeout");
+    /*var $timeout = $ioc.get("$timeout");
     var $state = $ioc.get('$state');
     var ionicBar = $ioc.get("$ionicNavBarDelegate");
     var LPNavBar = $ioc.get('LPNavBar');
@@ -44,7 +33,49 @@ angular.module('starter.controllers', ['ngSanitize'])
 
     me.log = function () {
       console.log(arguments[0]);
+    }*/
+    me.userId = 1;
+
+    //查看全部订单
+    me.goToShoppingList = function () {
+      $state.go(".shoppingList", { id: me.userId });
     }
+    $scope.chats = Chats.all();
+    $scope.remove = function (chat) {
+      Chats.remove(chat);
+    };
+  }])
+
+  .controller('ChatDetailCtrl', ['$scope', '$stateParams', 'Chats', '$ionicHistory', function ($scope, $stateParams, Chats, $ionicHistory) {
+    $scope.chat = Chats.get($stateParams.chatId);
+    console.log($ionicHistory.backView());
+  }])
+
+  .controller('AccountCtrl', ['$scope', '$ionicHistory', function ($scope, $ionicHistory) {
+    debugger;
+    var me = this;
+    /*var $timeout = $ioc.get("$timeout");
+    var $state = $ioc.get('$state');
+    var ionicBar = $ioc.get("$ionicNavBarDelegate");
+    var LPNavBar = $ioc.get('LPNavBar');
+
+    LPNavBar.init({
+      backText: ""
+    }, me);
+
+    this.settings = {
+      enableFriends: true
+    };
+    me.settingActive = function (b) {
+      me.settingActivated = b;
+      $timeout(function () {
+        me.settingActivated = false;
+      }, 200);
+    }
+
+    me.log = function () {
+      console.log(arguments[0]);
+    }*/
     me.userId = 1;
 
     //查看全部订单
@@ -230,10 +261,9 @@ angular.module('starter.controllers', ['ngSanitize'])
   /**
    * 产品详情页
    */
-  .controller('AppDetailCtrl', ["$injector", "$scope", "$location", function ($injector, $scope, $location) {
+  .controller('AppDetailCtrl', ["$injector", "$scope", "$location", 'goodDetail', function ($injector, $scope, $location, goodDetail) {
     var $ionicHistory = $injector.get("$ionicHistory");
     var $state = $injector.get("$state");
-    var $http = $injector.get("$http");
     var $timeout = $injector.get("$timeout");
     var history = $ionicHistory.viewHistory();
     var LPData = $injector.get("LPData");
@@ -241,8 +271,11 @@ angular.module('starter.controllers', ['ngSanitize'])
     var params = $injector.get("$stateParams");
     var ionicTabs = $injector.get("$ionicTabsDelegate");
     var LPNavBar = $injector.get('LPNavBar');
+    var commentModel = $injector.get('GetGoodsCommentModel');
+    //var goodDetailModel = $injector.get('GetGoodsDetailModel');
     var me = this;
-
+    goodDetail.img_url = cfg.env.current.webHost + goodDetail.img_url;
+    $scope.goodsDetail = goodDetail;
     $scope.$on('$ionicView.beforeEnter', function () {
       var leftButton = '';
       if (!$ionicHistory.backView()) {
@@ -254,22 +287,26 @@ angular.module('starter.controllers', ['ngSanitize'])
           $ionicHistory.nextViewOptions({
             historyRoot: true
           });
-          console.log($location);
           $state.go('app.main');
         },
         rightButtonIcon: "ion-android-more-horizontal",
         navBarBottomBorder: false
       }, me).showBottomBorder();
     });
-
-    //获取商品详情$state.params.id
-    $http.post(cfg.env.current.apiHost + "/mall/getGoodsDetail", { "goods_id": params.id }).then(function (res) {
-      var data = LPData.checkData(res);
-      if (data["0"]) {
-        $scope.goodsDetail = data["0"];
-        $scope.goodsDetail.img_url = cfg.env.current.webHost + $scope.goodsDetail.img_url;
+    
+    commentModel.execute({params:{goods_id: params.id}},
+      function(res){
+        var data = LPData.fetchData(res);
+        me.comments = data.map(function(d){
+          if (d.header) {
+            d.header = cfg.env.current.webHost + d.header;
+          }else{
+            d.header = 'http://m.edealdeal.com/static/images/initial_head.png';
+          }
+          return d;
+        });
       }
-    });
+    );
 
     $scope.$on("$ionicView.beforeEnter", function () {
       ionicTabs.showBar(false);

@@ -1,4 +1,4 @@
-<ion-view>
+<ion-view hide-back-button="true">
   <ion-nav-title class="item-input-inset bar">
     <label class="item-input-wrapper">
       <i class="icon ion-ios-search placeholder-icon"></i>
@@ -45,7 +45,7 @@
     <ul class="product-list clearfix tag-shadow">
       <li class="product-item" ng-repeat="datum in Products track by datum.id">
         <div class="sell_out" ng-show="datum.isSaleOut"></div>
-        <a ng-href="#/app/detail/{{datum.id}}" nav-direction="forward" class="block">
+        <a ui-sref="app.detail({id: datum.id})" nav-direction="forward" class="block">
           <div class="w100h100">
             <img class="responsive" ng-src="{{datum.img_url}}">
           </div>

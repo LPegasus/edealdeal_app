@@ -61,6 +61,25 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
           }
         })
 
+        .state('app.chats', {
+          url: '/chats',
+          views: {
+            'app': {
+              templateUrl: 'templates/app/detail.html',
+              controller: "AppDetailCtrl"
+            }
+          }
+        })
+        .state('app.chat-detail', {
+          url: '/chats/:chatId',
+          views: {
+            'app': {
+              templateUrl: 'templates/chat-detail.html',
+              controller: 'ChatDetailCtrl',
+            }
+          }
+        })
+
         // Each tab has its own nav history stack:
 
         .state('app.main', {
@@ -129,8 +148,32 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
           views: {
             "app": {
               templateUrl: 'templates/app/detail.html',
-              controller: "AppDetailCtrl"
+              controller: "AppDetailCtrl",
+              controllerAs: 'c'
             }
+          },
+          resolve: {
+            "goodDetail": ['GetGoodsDetailModel', '$ionicPopup', '$timeout', '$stateParams', '$http', '$state',
+              function (model, $ionicPopup, $timeout, $stateParams, $http, $state) {
+                return model.execute({ data: { goods_id: $stateParams.id } }, function (res) {
+                  if (!res.data.data) {
+                    var pop = $ionicPopup.alert({
+                      template: "获取商品数据失败。<br />返回前一页。",
+                      okText: '返回',
+                      cssClass: 'lp-pop-container no-header'
+                    });
+                    pop.then(function () {
+                      $state.go('app.main');
+                    });
+                    $timeout(function () {
+                      if (pop.close)
+                        pop.close();
+                    }, 1500);
+                    return null;
+                  }
+                  return res.data.data[0];
+                });
+              }]
           }
         })
 
@@ -145,6 +188,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
           }
         })
         ;
+
       // if none of the above states are matched, use this as the fallback
       $urlRouterProvider.otherwise('/app');
 

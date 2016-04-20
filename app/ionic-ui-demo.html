@@ -1,0 +1,16 @@
+<div class="popup-container lp-pop-container popup-showing active" ng-class="cssClass">
+  <div class="popup">
+    <div class="popup-head">
+      <h3 class="popup-title ng-binding" ng-bind-html="title">haha</h3>
+      <!-- ngIf: subTitle -->
+      <h5 class="popup-sub-title ng-binding" ng-bind-html="subTitle" ng-if="subTitle">hehe</h5>
+      <!-- end ngIf: subTitle -->
+    </div>
+    <div class="popup-body"><span>获取商品数据失败。</span><br><span>返回前一页。</span></div>
+    <div class="popup-buttons" ng-show="buttons.length">
+      <!-- ngRepeat: button in buttons --><button ng-repeat="button in buttons" ng-click="$buttonTapped(button, $event)" class="button ng-binding button-positive"
+        ng-class="button.type || 'button-default'" ng-bind-html="button.text">返回</button>
+      <!-- end ngRepeat: button in buttons -->
+    </div>
+  </div>
+</div>
