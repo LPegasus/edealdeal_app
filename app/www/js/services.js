@@ -1,53 +1,38 @@
+'use strict'
 angular.module('starter.services', [])
-
-  .factory('Chats', function () {
-    // Might use a resource here that returns a JSON array
-
-    // Some fake testing data
-    var chats = [{
-      id: 0,
-      name: 'Ben Sparrow',
-      lastText: 'You on your way?',
-      face: 'img/ben.png'
-    }, {
-        id: 1,
-        name: 'Max Lynx',
-        lastText: 'Hey, it\'s me',
-        face: 'img/max.png'
-      }, {
-        id: 2,
-        name: 'Adam Bradleyson',
-        lastText: 'I should buy a boat',
-        face: 'img/adam.jpg'
-      }, {
-        id: 3,
-        name: 'Perry Governor',
-        lastText: 'Look at my mukluks!',
-        face: 'img/perry.png'
-      }, {
-        id: 4,
-        name: 'Mike Harrington',
-        lastText: 'This is wicked good ice cream.',
-        face: 'img/mike.png'
-      }];
-
+  .factory('LPImgLoader', [function(){
+    var allLoadedCallback = angular.noop;
     return {
-      all: function () {
-        return chats;
-      },
-      remove: function (chat) {
-        chats.splice(chats.indexOf(chat), 1);
-      },
-      get: function (chatId) {
-        for (var i = 0; i < chats.length; i++) {
-          if (chats[i].id === parseInt(chatId)) {
-            return chats[i];
+      init: function(successcallback, failcallback) {
+        var finished = [];
+        var h = window.screen.height;
+        var imgs = document.querySelector('ion-nav-view[nav-view="active"]').querySelectorAll('img');
+        imgs = _.filter(imgs, function(img, i){
+          if (img.complete) return false;
+          img.onload = successcallback || function() {
+            addWhenFinish(i);
+            img.onload = null;
+          }
+          img.onerror = failcallback || function () {
+            addWhenFinish(i);
+            img.onerror = null;
+          }
+          return true;
+        });
+        
+        return this;
+        function addWhenFinish (i) {
+          if (finished.push(i) == imgs.length){
+            allLoadedCallback.call(null, imgs);
+            finished = [];
           }
         }
-        return null;
+      },
+      onAllLoaded: function(callback){
+        'function' == typeof callback && void (allLoadedCallback = callback); 
       }
-    };
-  })
+    }
+  }])
 
   .factory("LPConfig", function () {
     var cfg = {};
@@ -157,42 +142,29 @@ angular.module('starter.services', [])
    * 接口相关方法
    */
   .provider('LPData', function () {
-    var interfaces = ["checkData", "fetchData"]; //声明对外暴露的方法、属性
-    var DEFAULT = {
-      checkData: function (response) {
-        if (response.status === 200 && response.data && response.data.data) {
-          return response.data.data;
-        } else {
-          return false;
-        }
-      },
-      fetchData: function (res) {
-        var data;
-        if (!(data = this.checkData(res))) return null;
-        else {
-          var tmp = _.pick(data, function (v, k, o) { return isNaN(v); }), arrRes = [];
-          for (var i in tmp){
-            arrRes.push(tmp[i]);
-          }
-          return arrRes;
-        }
-      }
-    };
-
-    var gl = {};
     return {
-      $get: [function () {
-        var output = {};
-        interfaces.forEach(function (d, i) {
-          output[d] = gl[d];
-        });
-        return output;
-      }],
-      config: function (opts) {
-        for (var _interface in interfaces) {
-          gl[interfaces[_interface]] = opts[interfaces[_interface]] || DEFAULT[interfaces[_interface]];
+      $get: ['LPStorage', function (storage) {
+        return {
+          checkData: function (response) {
+            if (response.status === 200 && response.data && response.data.data || storage.isStorageType(response)) {
+              return response.data.data;
+            } else {
+              return false;
+            }
+          },
+          fetchData: function (res) {
+            var data;
+            if (!(data = this.checkData(res))) return null;
+            else {
+              var tmp = _.pick(data, function (v, k, o) { return isNaN(v); }), arrRes = [];
+              for (var i in tmp) {
+                arrRes.push(tmp[i]);
+              }
+              return arrRes;
+            }
+          }
         }
-      }
+      }]
     }
   })
 
@@ -249,6 +221,7 @@ angular.module('starter.services', [])
           return success.apply(ctx, arguments);
         }
       }, function () {
+        debugger;
         if (fail) {
           return fail.apply(ctx, arguments);
         }
@@ -291,8 +264,13 @@ angular.module('starter.services', [])
   }])
 
   .factory('GetGoodsDetailModel', ['LPRESTfulFactory', 'LPConfig', function (modelFactory, config) {
-    return modelFactory.makeAPI(config.env.current.apiHost + '/mall/getGoodsDetail', 'DETAIL_GETGOODSDETAIL_PARAMS', 'DETAIL_GETGOODSDETAIL_RESULT', true, { method: 'POST' });
+    return modelFactory.makeAPI(config.env.current.apiHost + '/mall/getGoodsDetail', 'DETAIL_GETGOODSDETAIL_PARAMS', 'DETAIL_GETGOODSDETAIL_RESULT', true);
   }])
+  
+  .factory('GetSameCategoryGoodsListModel', ['LPRESTfulFactory', 'LPConfig', function (modelFactory, config) {
+    return modelFactory.makeAPI(config.env.current.apiHost + '/Mall/getSameCategoryGoodsList', 'DETAIL_SAMEGOODSLIST_PARAMS', 'DETAIL_SAMEGOODSLIST_RESULT', true);
+  }])
+  
   /**
    * @desc 封装localStorage
    * localStorage所寸内容为StorageEntity类的实例
@@ -433,6 +411,9 @@ angular.module('starter.services', [])
       clearTimeoutItem: clearTimeoutItem,
       removeItem: function (name) {
         storage.removeItem(name);
+      },
+      isStorageType: function (obj) {
+        return obj instanceof StorageEntity;
       }
     }
   }])
@@ -453,4 +434,31 @@ angular.module('starter.services', [])
         }
       }
     }])
+
+  .factory('LPBuySvr', ['$q', '$state', '$timeout', function ($q, $state, $timeout) {
+    var deferred = $q.defer();
+    return {
+      buy: function () {
+        $timeout(function () {
+          console.log('buy something.');
+          deferred.resolve("buy");
+        });
+        return deferred.promise;
+      },
+      add: function(){
+        $timeout(function () {
+          console.log('add something.');
+          deferred.resolve("add");
+        });
+        return deferred.promise;
+      },
+      check: function(){
+        $timeout(function () {
+          console.log('check something.');
+          deferred.resolve("check");
+        });
+        return deferred.promise;
+      }
+    }
+  }])
   ;

@@ -10,3 +10,4 @@ plugins/
 bs-config.json
 *.config
 .vscode/
+resources/

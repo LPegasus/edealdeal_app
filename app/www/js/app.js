@@ -20,6 +20,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         // org.apache.cordova.statusbar required
         StatusBar.styleDefault();
       }
+      ionic.Platform.setGrade('a');
     });
 
     /*$rootScope.$on("$stateChangeSuccess", function(e, toState, toParams, fromState, fromParams) {
@@ -30,7 +31,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
 
   .config(["$stateProvider", "$urlRouterProvider", "$ionicConfigProvider", "LPDataProvider",
     function ($stateProvider, $urlRouterProvider, $ionicConfigProvider, LPDataProvider) {
-      $ionicConfigProvider.views.maxCache(20);
+      $ionicConfigProvider.views.maxCache(3);
+      $ionicConfigProvider.views.forwardCache(true);
+      $ionicConfigProvider.views.swipeBackEnabled(true);
+      $ionicConfigProvider.views.transition('ios');
+      $ionicConfigProvider.scrolling.jsScrolling(true);
+      $ionicConfigProvider.form.toggle('large');
+      $ionicConfigProvider.spinner.icon('ripple');
+      $ionicConfigProvider.navBar.alignTitle('center');
+      $ionicConfigProvider.tabs.style('standard');
+      $ionicConfigProvider.tabs.position('bottom');
+      /*$ionicConfigProvider.views.maxCache(3);
       $ionicConfigProvider.views.forwardCache(true);
       $ionicConfigProvider.backButton.icon("ion-ios-arrow-left");
       $ionicConfigProvider.platform.ios.tabs.style('standard');
@@ -43,7 +54,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
       //$ionicConfigProvider.platform.android.backButton.previousTitleText('').icon('ion-ios-arrow-left');
       $ionicConfigProvider.platform.ios.views.transition('ios');
       $ionicConfigProvider.platform.android.views.transition('android');
-
+      */
 
       // Ionic uses AngularUI Router which uses the concept of states
       // Learn more here: https://github.com/angular-ui/ui-router
@@ -151,10 +162,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
               controller: "AppDetailCtrl",
               controllerAs: 'c'
             }
-          },
+          }/*,
           resolve: {
-            "goodDetail": ['GetGoodsDetailModel', '$ionicPopup', '$timeout', '$stateParams', '$http', '$state',
-              function (model, $ionicPopup, $timeout, $stateParams, $http, $state) {
+            "goodDetail": ['GetGoodsDetailModel', '$ionicPopup', '$timeout', '$stateParams', '$http', '$state', '$ionicLoading',
+              function (model, $ionicPopup, $timeout, $stateParams, $http, $state, $ionicLoading) {
                 return model.execute({ data: { goods_id: $stateParams.id } }, function (res) {
                   if (!res.data.data) {
                     var pop = $ionicPopup.alert({
@@ -174,7 +185,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
                   return res.data.data[0];
                 });
               }]
-          }
+          }*/
         })
 
         .state('app.account.shoppingList', {
@@ -193,15 +204,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
       $urlRouterProvider.otherwise('/app');
 
     }])
-
-  .config(["LPDataProvider", function (LPData) {
-    LPData.config({
-      checkData: function (response) {
-        return response.status === 200 && response.data
-          && response.data.status === 1 && response.data.data;
-      }
-    });
-  }])
 
   //转x-www-form-urlencoded 不支持复杂类型数据，因为不同后台对于复杂类型数据的解析格式不一样
   .config(['$httpProvider', function ($hp) {

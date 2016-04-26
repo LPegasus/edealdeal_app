@@ -29,6 +29,11 @@
   <script src="js/services.js"></script>
   <script src="js/directives.js"></script>
   <script src="js/filters.js"></script>
+  <script>
+    window.onerror = function(e){
+      alert("err:" + JSON.stringify(e));
+    }
+  </script>
 </head>
 
 <body ng-app="starter">

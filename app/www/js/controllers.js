@@ -10,7 +10,6 @@ angular.module('starter.controllers', ['ngSanitize'])
     //
     //$scope.$on('$ionicView.enter', function(e) {
     //});
-    debugger;
     var me = this;
     /*var $timeout = $ioc.get("$timeout");
     var $state = $ioc.get('$state');
@@ -52,7 +51,6 @@ angular.module('starter.controllers', ['ngSanitize'])
   }])
 
   .controller('AccountCtrl', ['$scope', '$ionicHistory', function ($scope, $ionicHistory) {
-    debugger;
     var me = this;
     /*var $timeout = $ioc.get("$timeout");
     var $state = $ioc.get('$state');
@@ -133,6 +131,7 @@ angular.module('starter.controllers', ['ngSanitize'])
       var banner = $injector.get('GetBannerByCategoryModel');
       var hasMoreGoods = true;
       var isPageHide = false;
+      var slideBoxHandler = slideBoxDelegate.$getByHandle('sb');
       $scope.Products = [];
       $ionicHistory.currentTitle("首页");
 
@@ -151,15 +150,12 @@ angular.module('starter.controllers', ['ngSanitize'])
       }
 
       LPNavBar.init({
-        leftButtonCallback: function () { console.log('left'); },
-        rightButtonCallback: function () { console.log('right'); },
+        leftButtonCallback: function () { },
+        rightButtonCallback: function () { },
         navBarBottomBorder: false
       }, $scope).hideBottomBorder();
       var $http = $injector.get('$http');
       var $ionicPopup = $injector.get('$ionicPopup');
-      $ionicLoading.show({
-        template: 'Loading...'
-      });
 
       $scope.clearSearch = function () {
         $scope.searchKeywords = null;
@@ -172,6 +168,13 @@ angular.module('starter.controllers', ['ngSanitize'])
       $scope.$on('$ionicView.afterEnter', function () {
         isPageHide = false;
         $scope.scrolling();
+        slideBoxHandler.start();
+      });
+
+      $scope.$on('$ionicView.afterLeave', function () {
+        LPNavBar.showBottomBorder();
+        isPageHide = true;
+        slideBoxHandler.stop();
       });
 
       $scope.scrolling = function () {
@@ -183,11 +186,6 @@ angular.module('starter.controllers', ['ngSanitize'])
           LPNavBar.hideBottomBorder();
         }
       }
-
-      $scope.$on('$ionicView.afterLeave', function () {
-        LPNavBar.showBottomBorder();
-        isPageHide = true;
-      });
 
       banner.execute({
         data: {
@@ -204,16 +202,19 @@ angular.module('starter.controllers', ['ngSanitize'])
             bannerAds.push(data[_i]);
           }
           $scope.bannerAds = bannerAds;
-          requestAnimationFrame(function () {
-            var slideBoxHandler = slideBoxDelegate.$getByHandle('sb');
+          $timeout(function () {
             slideBoxHandler.update();
             slideBoxHandler.loop(true);
-          });
+            if (bannerAds.length < 3) {
+              document.querySelector('[delegate-handle="sb"]').querySelector('.slider-pager').remove();
+            }
+          }, 500);
         }
+        window.s = slideBoxHandler;
       });
       var currentPage = 1, pageSize = 10;
       $scope.getMoreProducts = function () {
-        goodsListModel.execute({ data: { page: currentPage++, page_size: pageSize } }, function (res) {
+        var execPromise = goodsListModel.execute({ data: { page: currentPage++, page_size: pageSize } }, function (res) {
           var data = res.data;
           if (data) {
             $scope.Products = $scope.Products.concat(_.filter(_.map(data.data, function (d) {
@@ -227,8 +228,6 @@ angular.module('starter.controllers', ['ngSanitize'])
             hasMoreGoods = false;
           }
           $scope.$broadcast('scroll.infiniteScrollComplete');
-        }).finally(function () {
-          $ionicLoading.hide();
         });
       }
 
@@ -253,15 +252,16 @@ angular.module('starter.controllers', ['ngSanitize'])
       $scope.hasMoreGoods = function () {
         return hasMoreGoods;
       }
-
-
       $scope.cfg = cfg;
+      ionic.requestAnimationFrame(function () {
+        $scope.getMoreProducts();
+      });
     }])
 
   /**
    * 产品详情页
    */
-  .controller('AppDetailCtrl', ["$injector", "$scope", "$location", 'goodDetail', function ($injector, $scope, $location, goodDetail) {
+  .controller('AppDetailCtrl', ['LPImgLoader', "$injector", "$scope", "$location", '$q', function (LPImgLoader, $injector, $scope, $location, $q) {
     var $ionicHistory = $injector.get("$ionicHistory");
     var $state = $injector.get("$state");
     var $timeout = $injector.get("$timeout");
@@ -272,10 +272,20 @@ angular.module('starter.controllers', ['ngSanitize'])
     var ionicTabs = $injector.get("$ionicTabsDelegate");
     var LPNavBar = $injector.get('LPNavBar');
     var commentModel = $injector.get('GetGoodsCommentModel');
-    //var goodDetailModel = $injector.get('GetGoodsDetailModel');
+    var goodDetailModel = $injector.get('GetGoodsDetailModel');
+    var pop = $injector.get('$ionicPopup');
+    var sameGoodsModel = $injector.get('GetSameCategoryGoodsListModel');
+    var scrollHandler = $injector.get('$ionicScrollDelegate').$getByHandle('detailScroll');
     var me = this;
-    goodDetail.img_url = cfg.env.current.webHost + goodDetail.img_url;
-    $scope.goodsDetail = goodDetail;
+    var pageDOM1;
+    var pageDOM2;
+    var firstPageHeight;
+    var secondPageHeight;
+    var isFirstPage = true;
+    var viewPort;
+    var viewContainer;
+    window.contentHeight;
+    window.isEdge = false;
     $scope.$on('$ionicView.beforeEnter', function () {
       var leftButton = '';
       if (!$ionicHistory.backView()) {
@@ -292,25 +302,180 @@ angular.module('starter.controllers', ['ngSanitize'])
         rightButtonIcon: "ion-android-more-horizontal",
         navBarBottomBorder: false
       }, me).showBottomBorder();
+      ionicTabs.showBar(false);
+      var p1 = commentModel.execute({ params: { goods_id: params.id } },
+        function (res) {
+          var data = LPData.fetchData(res);
+          me.comments = data.map(function (d) {
+            if (d.header) {
+              d.header = cfg.env.current.webHost + d.header;
+            } else {
+              d.header = 'http://m.edealdeal.com/static/images/initial_head.png';
+            }
+            return d;
+          });
+        }
+      );
+      var p2 = goodDetailModel.execute({ params: { goods_id: params.id } },
+        function (res) {
+          var data = LPData.fetchData(res);
+          if (!data) {
+            var p = pop.alert({
+              template: "获取商品数据失败。<br />返回前一页。",
+              okText: '返回',
+              cssClass: 'lp-pop-container no-header'
+            });
+            p.then(function () {
+              $state.go('app.main');
+            });
+            $timeout(function () {
+              if (p.close) p.close();
+            }, 1500);
+            return;
+          } else {
+            data[0].img_url = cfg.env.current.webHost + data[0].img_url;
+            $scope.goodsDetail = data[0];
+            me.moreImgs = $scope.goodsDetail.description.match(/src=(['"]).+?\1/ig).map(function (d) {
+              var src = d.substring(5, d.length - 1);
+              return cfg.env.current.webHost + src;
+            });
+          }
+        }
+      );
+
+      var p3 = sameGoodsModel.execute({ params: { page: 1, goods_id: params.id } }, function (res) {
+        var data = LPData.fetchData(res);
+        me.sameGoods = data.map(function (d) {
+          d.img_url = cfg.env.current.webHost + d.img_url;
+          return _.pick(d, 'img_url', 'current_price', 'id', 'title');
+        });
+      });
+
+      return $q.all([p1, p2, p3]).then(function () {
+        //第一屏的图片高度必须确定，否则无法获取正确首屏高度
+        return $timeout(reloadHeight, 100).then(function () {
+          LPImgLoader.init()
+            .onAllLoaded(function(imgs){
+              reloadHeight();
+            });
+          //下拉事件绑定
+          var originY1 = 0, originY2 = stats[1].translateY, shouldSwitch = false, startY;
+          ionic.onGesture('dragstart', function (e) {
+            startY = null;
+            if (!isEdge) return;
+          }, pageDOM1);
+          
+          ionic.onGesture('dragend', function(e) {
+            if (!shouldSwitch && isEdge) {
+              viewContainer.classList.add('ease-in-out');
+              if (isFirstPage && e.gesture.delta)
+                viewContainer.style.transform = "translateY(" + originY1 + 'px)';
+              else
+                viewContainer.style.transform = 'translateY(' + originY2 + 'px)';
+            } else if (shouldSwitch && isEdge) {
+              switchPage();
+              shouldSwitch = false;
+            }
+          }, pageDOM1);
+
+          //上拉事件绑定
+          ionic.onGesture('dragdown', function (e) {
+            if (e.gesture.distance > 300 && !isFirstPage) {
+              switchPage(0);
+            }
+          }, pageDOM2);
+          
+          ionic.onGesture('dragstart', checkIfEdge, viewContainer)
+        });
+      });
     });
     
-    commentModel.execute({params:{goods_id: params.id}},
-      function(res){
-        var data = LPData.fetchData(res);
-        me.comments = data.map(function(d){
-          if (d.header) {
-            d.header = cfg.env.current.webHost + d.header;
-          }else{
-            d.header = 'http://m.edealdeal.com/static/images/initial_head.png';
-          }
-          return d;
-        });
-      }
-    );
+    function checkIfEdge(e) {
+      window.isEdge = isFirstPage && scrollHandler.getScrollPosition().top - 2 + contentHeight - firstPageHeight >= -2
+        || !isFirstPage && scrollHandler.getScrollPosition().top == 0;
+    }
+    
+    function setContainerTranslateY(v){
+      viewContainer.style.transform = 'translateY(' + v + 'px)';
+    }
 
-    $scope.$on("$ionicView.beforeEnter", function () {
-      ionicTabs.showBar(false);
-    });
+    function reloadHeight() {
+      pageDOM1 = document.getElementById('goods-detail-view1');
+      pageDOM2 = document.getElementById('goods-detail-view2');
+      var rect1 = pageDOM1.getBoundingClientRect();
+      var rect2 = pageDOM2.getBoundingClientRect();
+      firstPageHeight = rect1.bottom - rect1.top;
+      secondPageHeight = rect2.bottom - rect2.top;
+      var pos = document.getElementById('detail-view-content').getBoundingClientRect();
+      contentHeight = pos.bottom - pos.top;
+      viewPort = document.getElementById('detail-viewport');
+      viewContainer = document.getElementById('detail-container');
+      window.firstPageHeight = firstPageHeight;
+      window.secondPageHeight = secondPageHeight;
+      stats = [
+        //两种切换后的初始状态
+        //viewHeight：容器的可滚动高度
+        //translateY：内容页面的偏移高度
+        //scrollY：滚动后的滚动条位置
+        {
+          viewHeight: firstPageHeight,
+          translateY: 0,
+          scrollY: firstPageHeight - contentHeight,
+          scroll: 'Bottom'
+        },
+        {
+          viewHeight: secondPageHeight,
+          translateY: -firstPageHeight - 1,
+          scrollY: 0,
+          scroll: 'Top'
+        }
+      ];
+      if (isFirstPage) {
+        targetStat = stats[0];
+      } else {
+        targetStat = stats[1];
+      }
+
+      viewPort.style.height = targetStat.viewHeight + 'px';
+    }
+
+    var stats, targetStat;
+    function switchPage(idx) {
+      if (!isNaN(idx)) {
+        targetStat = stats[idx];
+      } else if (isFirstPage) {
+        targetStat = stats[1];
+      } else {
+        targetStat = stats[0];
+      }
+
+      viewPort.style.height = targetStat.viewHeight + 'px';
+      /*document.getElementById('detail-view-content')
+        .querySelector('.scroll').style.transform = 'translate3d(0,-' + targetStat.scrollY + 'px,0)';*/
+      scrollHandler.freezeAllScrolls(true);//锁定滚动条
+      viewContainer.classList.add('ease-in-out');
+      viewContainer.style.transform = 'translateY(' + (targetStat.scroll == 'Bottom' ? contentHeight : - contentHeight) + 'px)';
+      //scrollHandler['scroll' + targetStat.scroll](false);//设置切换后的滚动条位置
+
+      isFirstPage = !isFirstPage;
+
+    }
+
+    ionic.on('transitionend', onTransitionEnd, viewContainer);
+
+    function onTransitionEnd(e) {
+      if (!isEdge) return;
+      scrollHandler.freezeAllScrolls(false);//解锁滚动条
+      viewContainer.classList.remove('ease-in-out');
+      viewContainer.style.transform = 'translateY(' + targetStat.translateY + 'px)';
+      scrollHandler['scroll' + targetStat.scroll](false);//设置切换后的滚动条位置
+    }
+
+    var $ionicPosition = $injector.get('$ionicPosition');
+    window.getPosition = function (dom) {
+      return $ionicPosition.position(dom);
+    }
+    window.switchPage = switchPage;
   }])
 
   .controller('RushCtrl', ['$injector', '$scope',

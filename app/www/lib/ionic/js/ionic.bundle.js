@@ -31669,7 +31669,6 @@ function deepCompare(actual, expected, comparator, matchAgainstAnyProp, dontMatc
       } else {
         return comparator(actual, expected);
       }
-      break;
     case 'function':
       return false;
     default:
@@ -41765,7 +41764,6 @@ function stripCommentsFromElement(element) {
     switch (element.length) {
       case 0:
         return [];
-        break;
 
       case 1:
         // there is no point of stripping anything if the element
@@ -41778,7 +41776,6 @@ function stripCommentsFromElement(element) {
 
       default:
         return jqLite(extractElementNode(element));
-        break;
     }
   }
 
@@ -57610,7 +57607,7 @@ function($scope,
   };
 
   self.scrollTop = function(shouldAnimate) {
-    self.resize().then(function() {
+    return self.resize().then(function() {
       if (!scrollView) {
         return;
       }
@@ -57619,7 +57616,7 @@ function($scope,
   };
 
   self.scrollBottom = function(shouldAnimate) {
-    self.resize().then(function() {
+    return self.resize().then(function() {
       if (!scrollView) {
         return;
       }
@@ -57629,7 +57626,7 @@ function($scope,
   };
 
   self.scrollTo = function(left, top, shouldAnimate) {
-    self.resize().then(function() {
+    return self.resize().then(function() {
       if (!scrollView) {
         return;
       }
@@ -57638,7 +57635,7 @@ function($scope,
   };
 
   self.zoomTo = function(zoom, shouldAnimate, originLeft, originTop) {
-    self.resize().then(function() {
+    return self.resize().then(function() {
       if (!scrollView) {
         return;
       }
@@ -57647,7 +57644,7 @@ function($scope,
   };
 
   self.zoomBy = function(zoom, shouldAnimate, originLeft, originTop) {
-    self.resize().then(function() {
+    return self.resize().then(function() {
       if (!scrollView) {
         return;
       }
@@ -57656,7 +57653,7 @@ function($scope,
   };
 
   self.scrollBy = function(left, top, shouldAnimate) {
-    self.resize().then(function() {
+    return self.resize().then(function() {
       if (!scrollView) {
         return;
       }
@@ -57665,7 +57662,7 @@ function($scope,
   };
 
   self.anchorScroll = function(shouldAnimate) {
-    self.resize().then(function() {
+    return self.resize().then(function() {
       if (!scrollView) {
         return;
       }

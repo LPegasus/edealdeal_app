@@ -1,20 +1,40 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version='1.0' encoding='utf-8'?>
 <widget id="com.lpegasus.edealdeal" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>app</name>
-  <description>
+    <name>app</name>
+    <description>
     一丢丢海淘
   </description>
-  <author email="pegusas1@hotmail.com" href="http://m.edealdeal.com">
+    <author email="pegusas1@hotmail.com" href="http://m.edealdeal.com">
       LPegasus
   </author>
-  <content src="index.html"/>
-  <access origin="*"/>
-  <preference name="webviewbounce" value="false"/>
-  <preference name="UIWebViewBounce" value="true"/>
-  <preference name="DisallowOverscroll" value="true"/>
-  <preference name="android-minSdkVersion" value="16"/>
-  <preference name="BackupWebStorage" value="none"/>
-  <feature name="StatusBar">
-    <param name="ios-package" value="CDVStatusBar" onload="true"/>
-  </feature>
+    <content src="index.html" />
+    <access origin="*" />
+    <preference name="webviewbounce" value="false" />
+    <preference name="UIWebViewBounce" value="true" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="android-minSdkVersion" value="16" />
+    <preference name="BackupWebStorage" value="none" />
+    <preference name="SplashScreen" value="screen" />
+    <preference name="SplashScreenDelay" value="3000" />
+    <feature name="StatusBar">
+        <param name="ios-package" onload="true" value="CDVStatusBar" />
+    </feature>
+    <platform name="android">
+        <icon density="ldpi" src="resources/icon/doge36.png" />
+        <icon density="mdpi" src="resources/icon/doge48.png" />
+        <icon density="hdpi" src="resources/icon/doge72.png" />
+        <icon density="xhdpi" src="resources/icon/doge96.png" />
+        <icon density="xxhdpi" src="resources/icon/doge144.png" />
+        <icon density="xxxhdpi" src="resources/icon/doge192.png" />
+        <splash density="port-ldpi" src="resources/splash/YoonA320.png" />
+        <splash density="port-mdpi" src="resources/splash/YoonA480.png" />
+        <splash density="port-hdpi" src="resources/splash/YoonA800.png" />
+        <splash density="port-xhdpi" src="resources/splash/YoonA1280.png" />
+        <splash density="port-xxhdpi" src="resources/splash/YoonA1600.png" />
+        <splash density="port-xxxhdpi" src="resources/splash/YoonA1920.png" />
+    </platform>
+    <preference name="xwalkVersion" value="18+" />
+    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
+    <preference name="xwalkMode" value="embedded" />
+    <preference name="xwalkMultipleApk" value="true" />
 </widget>

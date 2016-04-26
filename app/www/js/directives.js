@@ -33,8 +33,8 @@ angular.module('starter.directives', ['starter.services'])
             $interval.cancel(promise);
           }
         }, $scope.interval);
-        
-        $scope.timeLeft = function(){
+
+        $scope.timeLeft = function () {
           return $scope.endTime - $scope.now;
         }
       }],
@@ -46,4 +46,25 @@ angular.module('starter.directives', ['starter.services'])
     }
   }])
 
+  .directive('lpBuyBar', [function () {
+    return {
+      restrict: 'E',
+      scope: true,
+      require: '^ionNavView',
+      template: '' +
+      '<div class="bar bar-footer bar-buy stable-bg">' +
+      '<button on-tap="check()"><i class="icon ion-ios-cart"></i><br/>购物车</button>' +
+      '<button on-tap="add()" id="add-to-cart">加入购物车</button>' +
+      '<button on-tap="buy()" class="assertive-bg" id="go-to-pay">立即购买</button>' +
+      '</div>',
+      link: function (scope, el, attrs){
+        var contentEl = el.parent().find("ion-content").addClass('has-bar-buy');
+      },
+      controller: ['$scope', '$attrs', '$element', 'LPBuySvr', function($scope, $attrs, $el, buySvr){
+        $scope.buy = buySvr.buy;
+        $scope.add = buySvr.add;
+        $scope.check = buySvr.check;
+      }]
+    }
+  }])
   ;
